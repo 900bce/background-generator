@@ -1,18 +1,15 @@
 let body = document.querySelector('body');
 let colorInfo = document.querySelector('h3');
-const colors = document.querySelectorAll('.color-input');
+const colorInputs = document.querySelector('.color-input-box');
+let colors = document.querySelectorAll('.color-input');
 const genButton = document.querySelector('.gen-btn');
+let numOfColor = 2;
+const bgModeSelector = document.getElementsByClassName('style-selector');
 
 const init = () => {
   setupColors();
   buildBackground();
   userSelectColor();
-  genButton.addEventListener('click', genNewBg);
-}
-
-const genNewBg = () => {
-  setupColors();
-  buildBackground();
 }
 
 const userSelectColor = () => {
@@ -24,11 +21,18 @@ const userSelectColor = () => {
   });
 }
 
-const setupColors = () => colors.forEach(color => color.value = buildColor());
+const setupColors = () => {
+  colors.forEach(color => color.value = buildColor());
+}
 
 const buildBackground = () => {
-  body.style.background = 'linear-gradient(to right bottom, ' + colors[0].value + ', ' + colors[1].value + ')';
-  colorInfo.textContent = colors[0].value + ' | ' + colors[1].value;
+  let gradient = colors[0].value;
+  for (let i = 1; i < colors.length; i ++) {
+    gradient += ', ' + colors[i].value;
+  }
+  body.style.background = 'linear-gradient(to right bottom, ' + gradient + ')';
+  console.log(gradient);
+  colorInfo.textContent = gradient;
 }
 
 const buildColor = () => {
@@ -41,4 +45,28 @@ const buildColor = () => {
 
 const randomColor = () => Math.floor(Math.random()*16).toString(16);
 
+const setupInputMode = () => {
+  for (let i = 0; i < bgModeSelector.length; i++) {
+    bgModeSelector[i].addEventListener('click', () => { 
+      numOfColor = i + 2;
+      createColorInputBox(numOfColor);
+      init();
+    });
+  }
+}
+
+const createColorInputBox = (num) => {
+  while (colorInputs.hasChildNodes()) {
+    colorInputs.removeChild(colorInputs.firstChild);
+  }
+  for (let i = 0; i < num; i++) {
+    let newInput = document.createElement('input');
+    newInput.type = 'color';
+    newInput.className = 'color-input';
+    colorInputs.appendChild(newInput);
+  }
+  colors = document.querySelectorAll('.color-input');
+}
+
 init();
+setupInputMode();
